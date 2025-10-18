@@ -9,3 +9,10 @@ repos:
     rev: 22.10.0
     hooks:
     -   id: black
+-   repo: local
+    hooks:
+    -   id: behave-tests
+        name: Run behave BDD tests
+        entry: bash -c "cd lab1 && behave features"
+        language: system
+        types: [python]
