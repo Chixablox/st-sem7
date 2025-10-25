@@ -5,6 +5,6 @@ class CoffeeMachine:
     def make_cappuccino(self):
         milk_needed = 100
         if self.milk < milk_needed:
-            raise ValueError("Не хватает молока")
+            return "Не хватает молока"
         self.milk -= milk_needed
         return "Капучино готов"

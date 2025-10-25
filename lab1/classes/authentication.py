@@ -7,13 +7,13 @@ class UserAccount:
 
     def try_login(self, password_attempt):
         if self.blocked:
-            raise ValueError("Произошла блокировка аккаунта")
+            return "Произошла блокировка аккаунта"
         if password_attempt != self.password:
             self.failed_attempts += 1
             if self.failed_attempts >= 3:
                 self.blocked = True
-                raise ValueError("Произошла блокировка аккаунта")
+                return "Произошла блокировка аккаунта"
             else:
-                raise ValueError("Неверный пароль")
+                return "Неверный пароль"
         self.failed_attempts = 0
-        return True
+        return "Выполнен успешный вход в аккаунт"

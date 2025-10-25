@@ -5,6 +5,6 @@ class ATM:
 
     def withdraw(self, amount):
         if amount > self.balance:
-            raise ValueError("Недостаточно средств на счёте")
+            return "Недостаточно средств на счёте"
         self.balance -= amount
-        return self.balance
+        return "Средства успешно сняты"
