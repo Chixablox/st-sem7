@@ -37,8 +37,6 @@ def step_when_order_cappuccino(context):
 
 
 # Общее
-
-
 @then('появляется сообщение "{msg}"')
 def step_then_error_message(context, msg):
     assert context.result_message == msg
