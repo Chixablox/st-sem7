@@ -4,3 +4,4 @@ testcontainers
 pytest
 confluent-kafka
 psycopg2-binary
+pre-commit
