@@ -20,9 +20,11 @@ def step_given_user(context, login, password):
     context.user = UserAccount(login, password)
 
 
-@when('пользователь "{login}" вводит неправильный пароль "{password_attempt}"')
-def step_when_wrong_password(context, login, password_attempt):
-    context.result_message = context.user.try_login(password_attempt)
+@when('пользователь "{login}" вводит неправильные пароли:')
+def step_when_wrong_passwords(context, login):
+    for row in context.table:
+        password_attempt = row["Неправ_пароль"]
+        context.result_message = context.user.try_login(password_attempt)
 
 
 # Для кофемашины
