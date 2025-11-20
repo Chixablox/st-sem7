@@ -17,7 +17,7 @@ def test(db_session, kafka_container):
     test_order = OrderFactory.build()
 
     order_service = OrderService(db_session, kafka_bootstrap, topic)
-    order_service.add_and_push_order(test_order.item_name, test_order.quantity)
+    order_service.add_and_push_order(test_order)
 
     db_order = db_session.get(Order, test_order.id)
     assert db_order.item_name == test_order.item_name
