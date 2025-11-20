@@ -33,7 +33,7 @@ def engine(postgres_container):
 
 
 @pytest.fixture(scope="function")
-def db_session(engine):
+def session(engine):
     Session = sessionmaker(bind=engine)
     with Session() as session:
         yield session

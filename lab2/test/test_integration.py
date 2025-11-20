@@ -10,16 +10,17 @@ from notifications.service import NotificationService
 from orderFactory import OrderFactory
 
 
-def test(db_session, kafka_container):
+def test(session, kafka_container):
     topic = "orders"
     kafka_bootstrap = kafka_container.get_bootstrap_server()
 
     test_order = OrderFactory.build()
 
-    order_service = OrderService(db_session, kafka_bootstrap, topic)
+    order_service = OrderService(session, kafka_bootstrap, topic)
     order_service.add_and_push_order(test_order)
 
-    db_order = db_session.get(Order, test_order.id)
+    db_order = session.get(Order, test_order.id)
+    assert db_order.id == test_order.id
     assert db_order.item_name == test_order.item_name
     assert db_order.quantity == test_order.quantity
 
