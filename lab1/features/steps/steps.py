@@ -4,9 +4,9 @@ from classes.authentication import UserAccount
 from classes.coffeemachine import CoffeeMachine
 
 # Для банкомата
-@given('есть пользователь "{owner}", у которого на балансе {balance:d} рублей')
-def step_given_user_with_balance(context, owner, balance):
-    context.atm = ATM(owner, balance)
+@given('есть пользователь "{user}", у которого на балансе {balance:d} рублей')
+def step_given_user_with_balance(context, user, balance):
+    context.atm = ATM(user, balance)
 
 
 @when("этот пользователь пытается снять со счёта {amount:d} рублей")
