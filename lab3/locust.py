@@ -1,8 +1,9 @@
+#locust -f locust.py
 from locust import SequentialTaskSet, HttpUser, task, between
 import time
 import uuid
 
-class BlogScenario(SequentialTaskSet):
+class MakakScenario(SequentialTaskSet):
     
     def on_start(self):
         self.username = f"user_{uuid.uuid4()}"
@@ -12,7 +13,7 @@ class BlogScenario(SequentialTaskSet):
         response = self.client.post("/posts", json={
             "author": self.username,
             "title": "Обезьяний побег",
-            "content": "14.11.2025 в 12:00 по Гринвичу из Новосибирского зоопарка сбежало три макаки. " 
+            "content": "14.11.2025 в 12:00 по Гринвичу из Новосибирского зоопарка сбежали три макаки. " 
                        "Их точное местоположение до сих пор неизвестно.",
         }, name="post posts")
         
@@ -31,5 +32,5 @@ class BlogScenario(SequentialTaskSet):
 
 class BlogUser(HttpUser):
     wait_time = between(1, 3)
-    tasks = [BlogScenario]
+    tasks = [MakakScenario]
             

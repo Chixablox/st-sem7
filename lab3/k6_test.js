@@ -1,3 +1,4 @@
+//k6 run k6_test.js
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
@@ -32,14 +33,14 @@ export default function () {
 
     check(res, {
       "Статус ответа 200": (r) => r.status === 200,
-      'Ответ содержит данные': (r) => r.body.length > 0,
+      "Ответ содержит данные": (r) => r.body.length > 0,
     });
 
   } else {
     let payload = JSON.stringify({
         author: "Егор",
         title: "Обезьяний побег",
-        content: "14.11.2025 в 12:00 по Гринвичу из Новосибирского зоопарка сбежало три макаки. Их точное местоположение до сих пор неизвестно.",
+        content: "14.11.2025 в 12:00 по Гринвичу из Новосибирского зоопарка сбежали три макаки. Их точное местоположение до сих пор неизвестно.",
     })
 
     let res = http.post(
@@ -53,7 +54,7 @@ export default function () {
 
     check(res, {
       "Статус ответа 201": (r) => r.status === 201,
-      'Ответ содержит данные': (r) => r.body.length > 0,
+      "Ответ содержит данные": (r) => r.body.length > 0,
     });
   }
 
