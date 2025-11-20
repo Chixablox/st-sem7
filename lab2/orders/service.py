@@ -11,11 +11,9 @@ class OrderService:
         self.producer = Producer(config)
         self.topic = topic
 
-    def create_order(self, item_name: str, quantity: int):
-        order = Order(item_name=item_name, quantity=quantity)
+    def add_and_push_order(self, order: Order):
         self.session.add(order)
         self.session.commit()
-        self.session.refresh(order)
 
         message = json.dumps(
             {"id": order.id, "item_name": order.item_name, "quantity": order.quantity}
@@ -23,5 +21,3 @@ class OrderService:
 
         self.producer.produce(self.topic, message)
         self.producer.flush()
-
-        return order
