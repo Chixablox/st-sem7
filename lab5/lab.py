@@ -1,6 +1,7 @@
 import great_expectations as gx
 import pandas as pd
 import os
+import copy
 import shutil
 
 if os.path.exists("gx"):
@@ -20,33 +21,28 @@ asset_sql = datasource_sql.add_table_asset(
     name="daily_sales_table", table_name="daily_sales"
 )
 
-# Автопрофилирование CSV
+# Автопрофилирование
 batch_request_csv = asset_csv.build_batch_request()
 data_assistant_result = context.assistants.onboarding.run(
     batch_request=batch_request_csv
 )
 suite_auto = data_assistant_result.get_expectation_suite()
-suite_name_auto = suite_auto.expectation_suite_name
 context.add_or_update_expectation_suite(expectation_suite=suite_auto)
 
-# Запуск чекпоинта
-checkpoint_auto = context.add_checkpoint(
-    name="auto_profiling_checkpoint",
-    config_version=1.0,
-    class_name="SimpleCheckpoint",
-    validations=[
-        {"batch_request": batch_request_csv, "expectation_suite_name": suite_name_auto}
-    ],
-)
-context.run_checkpoint(checkpoint_name="auto_profiling_checkpoint")
+context.build_data_docs()
+context.open_data_docs()
 
-# Ручные проверки SQL
-suite_name_manual = "daily_sales_manual_suite"
-context.add_or_update_expectation_suite(suite_name_manual)
+# Копия автопрофилирования для добавления ручных
+suite_combined = copy.deepcopy(suite_auto)
+combined_suite_name = "combined_validation_suite"
+suite_combined.expectation_suite_name = combined_suite_name
+context.add_or_update_expectation_suite(expectation_suite=suite_combined)
 
+# Добавление ручных проверок SQL
 batch_request_sql = asset_sql.build_batch_request()
+
 validator_sql = context.get_validator(
-    batch_request=batch_request_sql, expectation_suite_name=suite_name_manual
+    batch_request=batch_request_sql, expectation_suite_name=combined_suite_name
 )
 
 validator_sql.expect_column_values_to_not_be_null(column="amount")
@@ -66,13 +62,13 @@ partition_object = {
     "weights": [category_dist.get(cat, 0.0) for cat in categories],
 }
 validator_sql.expect_column_kl_divergence_to_be_less_than(
-    column="category", partition_object=partition_object, threshold=0.6
+    column="category", partition_object=partition_object, threshold=0.2
 )
 
 validator_sql.save_expectation_suite(discard_failed_expectations=False)
 
 # Запуск чекпоинта
-checkpoint_name = "daily_sales_checkpoint"
+checkpoint_name = "checkpoint"
 checkpoint = context.add_checkpoint(
     name=checkpoint_name,
     config_version=1.0,
@@ -80,17 +76,12 @@ checkpoint = context.add_checkpoint(
     validations=[
         {
             "batch_request": batch_request_sql,
-            "expectation_suite_name": suite_name_manual,
+            "expectation_suite_name": combined_suite_name,
         }
     ],
 )
 
-result = context.run_checkpoint(checkpoint_name=checkpoint_name)
-validation_result = list(result.run_results.values())[0]["validation_result"]
-stats = validation_result["statistics"]
-
-print(f"Успешных проверок: {stats['successful_expectations']}")
-print(f"Неуспешных проверок: {stats['unsuccessful_expectations']}")
+context.run_checkpoint(checkpoint_name=checkpoint_name)
 
 context.build_data_docs()
 context.open_data_docs()
